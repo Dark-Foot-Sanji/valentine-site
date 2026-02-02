@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>💖 Valentine</title>
+  <style>
+    body {
+      margin: 0;
+      height: 100vh;
+      background: linear-gradient(135deg, #ffafbd, #ffc3a0);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-family: "Segoe UI", sans-serif;
+      text-align: center;
+      overflow: hidden;
+    }
+
+    
+    .card {
+      background: white;
+      padding: 25px;
+      border-radius: 20px;
+      width: 90%;
+      max-width: 350px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+      animation: pop 0.5s ease;
+    }
+
+    @keyframes pop {
+      from { transform: scale(0.8); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
+
+    h2 {
+      color: #ff4d6d;
+    }
+
+    button {
+      padding: 12px 20px;
+      border: none;
+      border-radius: 25px;
+      font-size: 16px;
+      margin: 10px;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    .yes {
+      background: #ff4d6d;
+      color: white;
+    }
+
+    .no {
+      background: #ddd;
+      position: relative;
+    }
+
+    .hidden {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+
+<div class="card" id="card">
+  <img id="gif" src="https://media.giphy.com/media/3oriO0OEd9QIDdllqo/giphy.gif" 
+    style="width:120px; margin-bottom:10px;">
+
+  <h2 id="question">Hey… 💕</h2>
+  <p id="text">I have something to ask you 👀</p>
+
+  <button class="yes" id="nextBtn" onclick="next()">Okay 😊</button>
+</div>
+
+<script>
+  let step = 0;
+
+  function next() {
+    const q = document.getElementById("question");
+    const t = document.getElementById("text");
+    const btn = document.getElementById("nextBtn");
+    const gif = document.getElementById("gif");
+    const card = document.getElementById("card");
+    const music = document.getElementById("bgMusic");
+    
+    if (music.paused) {
+      music.play();
+      music.volume = 0.4;
+    }
+
+
+    if (step === 0) {
+      q.innerText = "So… 😳";
+      t.innerText = "Do you like surprises?";
+      btn.innerText = "Yes 😊";
+      gif.src = "https://i.ibb.co/wZGnd7mN/image.png";
+    }
+
+    else if (step === 1) {
+      q.innerText = "Be honest 😌";
+      t.innerText = "Do you smile when you see my messages?";
+      btn.innerText = "Yes 💕";
+    }
+
+    else if (step === 2) {
+      q.innerText = "Important question 💖";
+      t.innerText = "Will you be my Valentine?";
+      btn.style.display = "none";
+
+      gif.src = "https://media0.giphy.com/media/v1.Y2lkPTc5MGI3NjExZ3lieWxpaXgxOGRsMHVnbXZ0MzJ3Ynpoa3YyYzhqb29lNzBjaDc1dSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/MDJ9IbxxvDUQM/giphy.gif";
+
+      card.innerHTML += `
+        <br>
+        <button class="yes" onclick="yes()">Yes 💘</button>
+        <button class="no" onmouseover="moveNo()">No 😜</button>
+      `;
+    }
+
+    step++;
+  }
+
+  function moveNo() {
+    const btn = document.querySelector(".no");
+    btn.style.left = Math.random() * 200 - 100 + "px";
+    btn.style.top = Math.random() * 200 - 100 + "px";
+  }
+
+  function yes() {
+    const card = document.getElementById("card");
+    card.innerHTML = `
+      <img src="https://media4.giphy.com/media/v1.Y2lkPTc5MGI3NjExc20xZjZqeWN6cmE5MGVqaTg5OWh4ZzV4OW5ibGc2cG51M2FrZ2txdyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/qFmdpUKAFZ6rMobzzu/giphy.gif" style="width:140px;">
+      <h2>Yayyy 💖</h2>
+      <p>
+        You just made my day ❤️<br><br>
+        I promise to annoy you, care for you,
+        and always choose you 
+      </p>
+      <p>Happy Valentine’s Day 🌹</p>
+    `;
+  }
+</script>
+
+
+<audio id="bgMusic" loop>
+  <source src="music.mp3" type="audio/mpeg">
+</audio>
+
+</body>
+</html>
