@@ -251,6 +251,41 @@
     font-size: 14px;
   }
 
+  .photoFrame {
+    position: relative;
+    margin-top: 12px;
+    border-radius: 22px;
+    padding: 14px;
+    background: #fff7fb;
+    box-shadow: inset 0 0 0 2px rgba(255, 77, 109, 0.12);
+  }
+
+  .photoFrame::before {
+    content: \"\"; 
+    position: absolute;
+    inset: -12px;
+    border-radius: 26px;
+    background:
+      radial-gradient(circle at 18px 18px, #ffb3c7 0 8px, transparent 9px),
+      radial-gradient(circle at calc(100% - 18px) 18px, #ffd1dc 0 8px, transparent 9px),
+      radial-gradient(circle at 18px calc(100% - 18px), #ffd6a5 0 8px, transparent 9px),
+      radial-gradient(circle at calc(100% - 18px) calc(100% - 18px), #c3f0ca 0 8px, transparent 9px);
+    pointer-events: none;
+    opacity: 0.9;
+  }
+
+  .photoFrame::after {
+    content: \"❀\"; 
+    position: absolute;
+    top: -12px;
+    left: 50%;
+    transform: translateX(-50%);
+    color: #ff7aa2;
+    background: white;
+    padding: 0 8px;
+    font-size: 16px;
+  }
+
   .card.animate .cardContent > *,
   .card.animate .actions {
     animation: contentFade 0.6s ease;
@@ -296,15 +331,6 @@
     from { transform: scale(0.4); opacity: 1; }
     to { transform: scale(1.8); opacity: 0; }
   }
-
-  .photoPlaceholderImg {
-    width: 100%;
-    max-width: 260px;
-    border-radius: 16px;
-    margin-top: 10px;
-  }
-
-
 </style>
 </head>
 
@@ -341,6 +367,7 @@ let matches = 0;
 let bonusMatched = false;
 const symbols = ["💖", "🌹", "✨", "🍫"];
 const bonusSymbol = "⭐";
+let musicInitialized = false;
 
 // ❤️ HEART SPAWNER
 setInterval(() => {
@@ -462,6 +489,20 @@ function nextStep() {
   const card = document.getElementById("card");
   const actions = document.getElementById("actions");
   const game = document.getElementById("game");
+  const music = document.getElementById("music");
+  const musicToggle = document.getElementById("musicToggle");
+
+  if (!musicInitialized) {
+    music.volume = 0.4;
+    music.play().then(() => {
+      musicToggle.classList.add("active");
+      musicToggle.innerText = "♪ On";
+    }).catch(() => {
+      musicToggle.classList.remove("active");
+      musicToggle.innerText = "♪ Music";
+    });
+    musicInitialized = true;
+  }
 
   // reset animation
   card.style.animation = "none";
@@ -559,11 +600,10 @@ function openGift(index) {
   const cardContent = document.getElementById("cardContent");
   const pages = {
     1: `
-      <img src="https://media4.giphy.com/media/v1.Y2lkPTc5MGI3NjExc20xZjZqeWN6cmE5MGVqaTg5OWh4ZzV4OW5ibGc2cG51M2FrZ2txdyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/qFmdpUKAFZ6rMobzzu/giphy.gif" style="width:140px" style="width:120px">
+      <img src="https://media4.giphy.com/media/v1.Y2lkPTc5MGI3NjExc20xZjZqeWN6cmE5MGVqaTg5OWh4ZzV4OW5ibGc2cG51M2FrZ2txdyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/qFmdpUKAFZ6rMobzzu/giphy.gif" style="width:120px">
       <h2>For you 💌</h2>
       <div class="envelope">
-        You make my days brighter just by being you. Every little moment feels
-        softer and sweeter when I’m with you.
+        The calm I never knew I needed and the warmth I always look for. I just want you to know that I'm really happy with you, and I want to keep choosing you every single day. I love you, more than I ever say out loud.
       </div>
     `,
     2: `
