@@ -231,6 +231,17 @@
     display: block;
   }
 
+  .backBtn {
+    margin-top: 14px;
+    background: #fff0f5;
+    color: #ff4d6d;
+    box-shadow: none;
+  }
+
+  .backBtn:hover {
+    transform: translateY(-2px);
+  }
+
   .envelope {
     background: #fff7fb;
     border: 1px solid rgba(255, 77, 109, 0.15);
@@ -575,6 +586,14 @@ function yes() {
     musicToggle.style.display = "none";
   }
 
+  renderGiftSelection();
+  actions.innerHTML = "";
+  animateCard();
+  sparkleBurst(window.innerWidth / 2, window.innerHeight / 2);
+}
+
+function renderGiftSelection() {
+  const cardContent = document.getElementById("cardContent");
   cardContent.innerHTML = `
     <img src="https://media3.giphy.com/media/v1.Y2lkPTc5MGI3NjExNTJxbzE1Ynk0amlwcm9zZ2ViYXF3dDIzYWozbXJsdXphZ3V2dnVvdSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/MDJ9IbxxvDUQM/giphy.gif" style="width:140px">
     <h2>Pick a gift 🎁</h2>
@@ -591,9 +610,6 @@ function yes() {
       </button>
     </div>
   `;
-  actions.innerHTML = "";
-  animateCard();
-  sparkleBurst(window.innerWidth / 2, window.innerHeight / 2);
 }
 
 function openGift(index) {
@@ -603,24 +619,27 @@ function openGift(index) {
       <img src="https://media4.giphy.com/media/v1.Y2lkPTc5MGI3NjExc20xZjZqeWN6cmE5MGVqaTg5OWh4ZzV4OW5ibGc2cG51M2FrZ2txdyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/qFmdpUKAFZ6rMobzzu/giphy.gif" style="width:120px">
       <h2>For you 💌</h2>
       <div class="envelope">
-        The calm I never knew I needed and the warmth I always look for. I just want you to know that I'm really happy with you, and I want to keep choosing you every single day. I love you, more than I ever say out loud.
+        You make my days brighter just by being you. Every little moment feels
+        softer and sweeter when I’m with you.
       </div>
+      <button class="backBtn" onclick="renderGiftSelection()">Back to gifts</button>
     `,
-    2: `
-      <h2>Photo of the one I love 📸</h2>
-      <img 
-        src="photo.jpg" 
-        class="photoPlaceholderImg"
-      >
-
+    2: ` 
+      <h2>Photo of the one I love 📸</h2> 
+      <img src="photo.jpg" class="photoPlaceholderImg" >
+      <div class="envelope"
+        Photo of the most beautiful girl in the world 💕
+      </div>
+      <button class="backBtn" onclick="renderGiftSelection()">Back to gifts</button>
     `,
     3: `
       <img src="https://media0.giphy.com/media/v1.Y2lkPTc5MGI3NjExNW1tZGJlancwNmdybXF2ZDkxd20yenNkYzMzd2Q1bzNzcWN0dm9iaSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/f9EmXxglhdhAj1bo28/giphy.gif" style="width:120px">
       <h2>Another note 💖</h2>
       <div class="envelope">
-        Thank you for the laughs, the hugs, and the love. I choose you today,
-        tomorrow, and always.
+        You helped me let go of a past that was once too heavy to carry.
+        With your patience, care and love, you showed me healing can be gentle. I often had trust issues with everyone but you never gave up on me and always helped me move forward. I never knew we would get closer this fast 💗. You are the only one I feel the most comfortable with 💐
       </div>
+      <button class="backBtn" onclick="renderGiftSelection()">Back to gifts</button>
     `
   };
   cardContent.innerHTML = pages[index] || pages[1];
