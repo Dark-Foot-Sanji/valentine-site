@@ -93,15 +93,15 @@
 
   .gameGrid {
     display: grid;
-    grid-template-columns: repeat(4, 56px);
-    gap: 10px;
+    grid-template-columns: repeat(3, 64px);
+    gap: 12px;
     justify-content: center;
     margin: 12px 0 8px;
   }
 
   .gameCard {
-    width: 56px;
-    height: 56px;
+    width: 64px;
+    height: 64px;
     background: #fff0f5;
     border-radius: 12px;
     display: flex;
@@ -120,11 +120,21 @@
     transform: scale(1.04);
   }
 
+  .gameCard.flipped.bonus {
+    background: #f7b955;
+    color: white;
+  }
+
   .gameCard.matched {
     background: #ffe2ec;
     color: #ff4d6d;
     cursor: default;
     transform: scale(0.98);
+  }
+
+  .gameCard.bonus {
+    background: #fff6e8;
+    color: #e67e22;
   }
 
   .gameStatus {
@@ -193,6 +203,54 @@
     min-height: 52px;
   }
 
+  .gifts {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    margin-top: 12px;
+  }
+
+  .giftBtn {
+    background: #fff0f5;
+    border: none;
+    border-radius: 18px;
+    padding: 10px;
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    box-shadow: 0 10px 20px rgba(255, 77, 109, 0.18);
+  }
+
+  .giftBtn:hover {
+    transform: translateY(-2px) scale(1.02);
+  }
+
+  .giftBtn img {
+    width: 100%;
+    max-width: 90px;
+    margin: 0 auto;
+    display: block;
+  }
+
+  .envelope {
+    background: #fff7fb;
+    border: 1px solid rgba(255, 77, 109, 0.15);
+    border-radius: 18px;
+    padding: 16px;
+    font-size: 15px;
+    color: #4a2c36;
+    line-height: 1.5;
+    box-shadow: inset 0 0 0 2px rgba(255, 77, 109, 0.05);
+  }
+
+  .photoPlaceholder {
+    border: 2px dashed rgba(255, 77, 109, 0.35);
+    border-radius: 18px;
+    padding: 26px;
+    margin-top: 8px;
+    color: #aa5f7b;
+    font-size: 14px;
+  }
+
   .card.animate .cardContent > *,
   .card.animate .actions {
     animation: contentFade 0.6s ease;
@@ -238,6 +296,15 @@
     from { transform: scale(0.4); opacity: 1; }
     to { transform: scale(1.8); opacity: 0; }
   }
+
+  .photoPlaceholderImg {
+    width: 100%;
+    max-width: 260px;
+    border-radius: 16px;
+    margin-top: 10px;
+  }
+
+
 </style>
 </head>
 
@@ -271,7 +338,9 @@ let gameComplete = false;
 let firstPick = null;
 let lockBoard = false;
 let matches = 0;
-const symbols = ["💖", "🌹", "✨", "🍫", "🎀", "💌", "🧸", "🍓"];
+let bonusMatched = false;
+const symbols = ["💖", "🌹", "✨", "🍫"];
+const bonusSymbol = "⭐";
 
 // ❤️ HEART SPAWNER
 setInterval(() => {
@@ -307,13 +376,14 @@ function initGame() {
   const game = document.getElementById("game");
   const grid = document.getElementById("gameGrid");
   const status = document.getElementById("gameStatus");
-  const deck = [...symbols, ...symbols].sort(() => Math.random() - 0.5);
+  const deck = [...symbols, ...symbols, bonusSymbol].sort(() => Math.random() - 0.5);
 
   grid.innerHTML = "";
   firstPick = null;
   lockBoard = false;
   matches = 0;
   gameComplete = false;
+  bonusMatched = false;
   status.innerText = "Match all the pairs to continue.";
 
   deck.forEach((symbol) => {
@@ -321,6 +391,9 @@ function initGame() {
     card.className = "gameCard";
     card.type = "button";
     card.dataset.symbol = symbol;
+    if (symbol === bonusSymbol) {
+      card.classList.add("bonus");
+    }
     card.addEventListener("click", () => handlePick(card, status));
     grid.appendChild(card);
   });
@@ -336,6 +409,14 @@ function handlePick(card, status) {
   card.classList.add("flipped");
   card.innerText = card.dataset.symbol;
 
+  if (card.dataset.symbol === bonusSymbol && !bonusMatched) {
+    card.classList.add("matched");
+    bonusMatched = true;
+    status.innerText = "Bonus star unlocked! Keep matching 💫";
+    checkGameComplete(status);
+    return;
+  }
+
   if (!firstPick) {
     firstPick = card;
     return;
@@ -347,13 +428,7 @@ function handlePick(card, status) {
     matches += 1;
     firstPick = null;
 
-    if (matches === symbols.length) {
-      gameComplete = true;
-      status.innerText = "Nice! You matched them all 💞";
-      const nextBtn = document.getElementById("nextBtn");
-      nextBtn.disabled = false;
-      nextBtn.innerText = "Continue ➡️";
-    }
+    checkGameComplete(status);
     return;
   }
 
@@ -366,6 +441,16 @@ function handlePick(card, status) {
     firstPick = null;
     lockBoard = false;
   }, 700);
+}
+
+function checkGameComplete(status) {
+  if (matches === symbols.length && bonusMatched) {
+    gameComplete = true;
+    status.innerText = "Nice! You matched them all 💞";
+    const nextBtn = document.getElementById("nextBtn");
+    nextBtn.disabled = false;
+    nextBtn.innerText = "Continue ➡️";
+  }
 }
 
 function nextStep() {
@@ -450,18 +535,57 @@ function yes() {
   }
 
   cardContent.innerHTML = `
-    <img src="https://media4.giphy.com/media/v1.Y2lkPTc5MGI3NjExc20xZjZqeWN6cmE5MGVqaTg5OWh4ZzV4OW5ibGc2cG51M2FrZ2txdyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/qFmdpUKAFZ6rMobzzu/giphy.gif" style="width:140px">
-    <h2>Yayyy 💖🥹</h2>
-    <p>
-      You just made my day ❤️<br><br>
-      I promise to annoy you, care for you,
-      and always choose you 🫶
-    </p>
-    <p>Happy Valentine’s Day 🌹</p>
+    <img src="https://media3.giphy.com/media/v1.Y2lkPTc5MGI3NjExNTJxbzE1Ynk0amlwcm9zZ2ViYXF3dDIzYWozbXJsdXphZ3V2dnVvdSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/MDJ9IbxxvDUQM/giphy.gif" style="width:140px">
+    <h2>Pick a gift 🎁</h2>
+    <p>Each one opens a special page just for you.</p>
+    <div class="gifts">
+      <button class="giftBtn" onclick="openGift(1)" aria-label="Open gift one">
+        <img src="https://i.ibb.co/FLDZqp6p/pngtree-gift-box-red-gift-box-yellow-ribbon-png-image-16021390.avif" alt="Gift one">
+      </button>
+      <button class="giftBtn" onclick="openGift(2)" aria-label="Open gift two">
+        <img src="https://i.ibb.co/FLDZqp6p/pngtree-gift-box-red-gift-box-yellow-ribbon-png-image-16021390.avif" alt="Gift two">
+      </button>
+      <button class="giftBtn" onclick="openGift(3)" aria-label="Open gift three">
+        <img src="https://i.ibb.co/FLDZqp6p/pngtree-gift-box-red-gift-box-yellow-ribbon-png-image-16021390.avif" alt="Gift three">
+      </button>
+    </div>
   `;
   actions.innerHTML = "";
   animateCard();
   sparkleBurst(window.innerWidth / 2, window.innerHeight / 2);
+}
+
+function openGift(index) {
+  const cardContent = document.getElementById("cardContent");
+  const pages = {
+    1: `
+      <img src="https://media4.giphy.com/media/v1.Y2lkPTc5MGI3NjExc20xZjZqeWN6cmE5MGVqaTg5OWh4ZzV4OW5ibGc2cG51M2FrZ2txdyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/qFmdpUKAFZ6rMobzzu/giphy.gif" style="width:140px" style="width:120px">
+      <h2>For you 💌</h2>
+      <div class="envelope">
+        You make my days brighter just by being you. Every little moment feels
+        softer and sweeter when I’m with you.
+      </div>
+    `,
+    2: `
+      <img src="https://i.ibb.co/9G3wC7g/gift-box-2.png" style="width:120px">
+      <h2>Photo of the one I love 📸</h2>
+      <img 
+        src="photo.jpg" 
+        class="photoPlaceholderImg"
+      >
+
+    `,
+    3: `
+      <img src="https://media0.giphy.com/media/v1.Y2lkPTc5MGI3NjExNW1tZGJlancwNmdybXF2ZDkxd20yenNkYzMzd2Q1bzNzcWN0dm9iaSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/f9EmXxglhdhAj1bo28/giphy.gif" style="width:120px">
+      <h2>Another note 💖</h2>
+      <div class="envelope">
+        Thank you for the laughs, the hugs, and the love. I choose you today,
+        tomorrow, and always.
+      </div>
+    `
+  };
+  cardContent.innerHTML = pages[index] || pages[1];
+  animateCard();
 }
 
 function toggleMusic() {
@@ -482,7 +606,7 @@ function toggleMusic() {
 document.addEventListener("keydown", (event) => {
   if (event.key === "Enter") {
     const nextBtn = document.getElementById("nextBtn");
-    if (nextBtn && nextBtn.style.display !== "none") {
+    if (nextBtn && nextBtn.style.display !== "none" && !nextBtn.disabled) {
       nextStep();
     }
   }
