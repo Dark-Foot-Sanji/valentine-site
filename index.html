@@ -9,25 +9,49 @@
   body {
     margin: 0;
     height: 100vh;
-    background: linear-gradient(135deg, #ffafbd, #ffc3a0);
+    background: linear-gradient(135deg, #ffafbd, #ffc3a0, #ffd6e7);
+    background-size: 200% 200%;
     display: flex;
     justify-content: center;
     align-items: center;
     font-family: "Segoe UI", sans-serif;
     overflow: hidden;
+    animation: gradientShift 12s ease infinite;
+  }
+
+  @keyframes gradientShift {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
   }
 
   .card {
     background: white;
-    width: 90%;
-    max-width: 360px;
-    padding: 25px;
-    border-radius: 22px;
+    width: 92%;
+    max-width: 420px;
+    padding: 32px 30px 36px;
+    border-radius: 26px;
     text-align: center;
-    box-shadow: 0 15px 30px rgba(0,0,0,0.2);
+    box-shadow: 0 20px 45px rgba(0,0,0,0.2);
     animation: fadeIn 0.6s ease;
     position: relative;
     z-index: 2;
+    border: 1px solid rgba(255, 255, 255, 0.7);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+
+  .card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 26px 55px rgba(0,0,0,0.22);
+  }
+
+  .card::after {
+    content: "";
+    position: absolute;
+    inset: -2px;
+    border-radius: 28px;
+    border: 2px solid rgba(255, 77, 109, 0.12);
+    pointer-events: none;
   }
 
   @keyframes fadeIn {
@@ -35,20 +59,84 @@
     to { opacity: 1; transform: translateY(0); }
   }
 
-  img {
-    width: 120px;
+  .cardTop {
+    display: flex;
+    justify-content: flex-end;
     margin-bottom: 10px;
-    transition: 0.4s;
+  }
+
+  img {
+    width: 130px;
+    margin-bottom: 12px;
+    transition: transform 0.4s ease;
   }
 
   h2 {
     color: #ff4d6d;
-    margin-bottom: 8px;
+    margin-bottom: 10px;
   }
 
   p {
     font-size: 16px;
     margin-bottom: 18px;
+    color: #4a2c36;
+  }
+
+  .game {
+    display: none;
+    margin-top: 12px;
+  }
+
+  .game.active {
+    display: block;
+  }
+
+  .gameGrid {
+    display: grid;
+    grid-template-columns: repeat(4, 56px);
+    gap: 10px;
+    justify-content: center;
+    margin: 12px 0 8px;
+  }
+
+  .gameCard {
+    width: 56px;
+    height: 56px;
+    background: #fff0f5;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    cursor: pointer;
+    transition: transform 0.2s ease, background 0.2s ease;
+    box-shadow: inset 0 0 0 2px rgba(255, 77, 109, 0.15);
+    user-select: none;
+  }
+
+  .gameCard.flipped {
+    background: #ff4d6d;
+    color: white;
+    transform: scale(1.04);
+  }
+
+  .gameCard.matched {
+    background: #ffe2ec;
+    color: #ff4d6d;
+    cursor: default;
+    transform: scale(0.98);
+  }
+
+  .gameStatus {
+    font-size: 13px;
+    color: #aa5f7b;
+    margin: 6px 0 0;
+  }
+
+  .mainBtn[disabled] {
+    cursor: not-allowed;
+    opacity: 0.6;
+    box-shadow: none;
   }
 
   button {
@@ -58,11 +146,16 @@
     font-size: 16px;
     cursor: pointer;
     transition: 0.3s;
+    box-shadow: 0 8px 18px rgba(255, 77, 109, 0.25);
   }
 
   .mainBtn {
     background: #ff4d6d;
     color: white;
+  }
+
+  .mainBtn:hover {
+    transform: translateY(-2px) scale(1.02);
   }
 
   .yes {
@@ -74,6 +167,40 @@
   .no {
     background: #ddd;
     position: absolute;
+  }
+
+  .iconBtn {
+    background: #fff0f5;
+    color: #ff4d6d;
+    font-size: 12px;
+    padding: 6px 12px;
+    border-radius: 999px;
+    box-shadow: none;
+  }
+
+  .iconBtn.active {
+    background: #ff4d6d;
+    color: white;
+  }
+
+  .actions {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    margin-top: 4px;
+    position: relative;
+    min-height: 52px;
+  }
+
+  .card.animate .cardContent > *,
+  .card.animate .actions {
+    animation: contentFade 0.6s ease;
+  }
+
+  @keyframes contentFade {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
   }
 
   /* ❤️ HEART PARTICLES */
@@ -96,16 +223,42 @@
     to { opacity: 1; transform: translateX(0); }
   }
 
+  .sparkle {
+    position: fixed;
+    width: 8px;
+    height: 8px;
+    background: radial-gradient(circle, #fff 0%, #ffd1dc 60%, transparent 100%);
+    border-radius: 50%;
+    pointer-events: none;
+    animation: sparkle 1.2s ease-out forwards;
+    z-index: 3;
+  }
+
+  @keyframes sparkle {
+    from { transform: scale(0.4); opacity: 1; }
+    to { transform: scale(1.8); opacity: 0; }
+  }
 </style>
 </head>
 
 <body>
 
 <div class="card" id="card">
-  <img id="img" src="https://media.giphy.com/media/3oriO0OEd9QIDdllqo/giphy.gif">
-  <h2 id="title">Hey… ❤️</h2>
-  <p id="text">I have something to ask you 👀</p>
-  <button class="mainBtn" id="nextBtn" onclick="nextStep()">Okay 😊</button>
+  <div class="cardTop">
+    <button class="iconBtn" id="musicToggle" onclick="toggleMusic()">♪ Music</button>
+  </div>
+  <div class="cardContent" id="cardContent">
+    <img id="img" src="https://media.giphy.com/media/3oriO0OEd9QIDdllqo/giphy.gif">
+    <h2 id="title">Hey… ❤️</h2>
+    <p id="text">I have something to ask you 👀</p>
+    <div class="game" id="game">
+      <p class="gameStatus" id="gameStatus">Match all the pairs to continue.</p>
+      <div class="gameGrid" id="gameGrid"></div>
+    </div>
+  </div>
+  <div class="actions" id="actions">
+    <button class="mainBtn" id="nextBtn" onclick="nextStep()">Okay 😊</button>
+  </div>
 </div>
 
 <audio id="music" loop>
@@ -114,6 +267,11 @@
 
 <script>
 let step = 0;
+let gameComplete = false;
+let firstPick = null;
+let lockBoard = false;
+let matches = 0;
+const symbols = ["💖", "🌹", "✨", "🍫", "🎀", "💌", "🧸", "🍓"];
 
 // ❤️ HEART SPAWNER
 setInterval(() => {
@@ -125,7 +283,90 @@ setInterval(() => {
   document.body.appendChild(heart);
 
   setTimeout(() => heart.remove(), 6000);
-}, 800);
+}, 900);
+
+function sparkleBurst(x, y) {
+  for (let i = 0; i < 6; i++) {
+    const sparkle = document.createElement("div");
+    sparkle.className = "sparkle";
+    sparkle.style.left = x + Math.random() * 30 - 15 + "px";
+    sparkle.style.top = y + Math.random() * 30 - 15 + "px";
+    document.body.appendChild(sparkle);
+    setTimeout(() => sparkle.remove(), 1200);
+  }
+}
+
+function animateCard() {
+  const card = document.getElementById("card");
+  card.classList.remove("animate");
+  void card.offsetWidth;
+  card.classList.add("animate");
+}
+
+function initGame() {
+  const game = document.getElementById("game");
+  const grid = document.getElementById("gameGrid");
+  const status = document.getElementById("gameStatus");
+  const deck = [...symbols, ...symbols].sort(() => Math.random() - 0.5);
+
+  grid.innerHTML = "";
+  firstPick = null;
+  lockBoard = false;
+  matches = 0;
+  gameComplete = false;
+  status.innerText = "Match all the pairs to continue.";
+
+  deck.forEach((symbol) => {
+    const card = document.createElement("button");
+    card.className = "gameCard";
+    card.type = "button";
+    card.dataset.symbol = symbol;
+    card.addEventListener("click", () => handlePick(card, status));
+    grid.appendChild(card);
+  });
+
+  game.classList.add("active");
+}
+
+function handlePick(card, status) {
+  if (lockBoard || card.classList.contains("flipped") || card.classList.contains("matched")) {
+    return;
+  }
+
+  card.classList.add("flipped");
+  card.innerText = card.dataset.symbol;
+
+  if (!firstPick) {
+    firstPick = card;
+    return;
+  }
+
+  if (firstPick.dataset.symbol === card.dataset.symbol) {
+    firstPick.classList.add("matched");
+    card.classList.add("matched");
+    matches += 1;
+    firstPick = null;
+
+    if (matches === symbols.length) {
+      gameComplete = true;
+      status.innerText = "Nice! You matched them all 💞";
+      const nextBtn = document.getElementById("nextBtn");
+      nextBtn.disabled = false;
+      nextBtn.innerText = "Continue ➡️";
+    }
+    return;
+  }
+
+  lockBoard = true;
+  setTimeout(() => {
+    firstPick.classList.remove("flipped");
+    firstPick.innerText = "";
+    card.classList.remove("flipped");
+    card.innerText = "";
+    firstPick = null;
+    lockBoard = false;
+  }, 700);
+}
 
 function nextStep() {
   step++;
@@ -134,74 +375,81 @@ function nextStep() {
   const btn = document.getElementById("nextBtn");
   const img = document.getElementById("img");
   const card = document.getElementById("card");
-  const music = document.getElementById("music");
+  const actions = document.getElementById("actions");
+  const game = document.getElementById("game");
 
   // reset animation
   card.style.animation = "none";
   card.offsetHeight;
 
   // choose animation based on step
-  if (step === 0) {
-    card.style.animation = "fadeIn 0.6s ease";
-  } else if (step === 1 || step === 2) {
+  if (step === 1 || step === 2) {
     card.style.animation = "slideInRight 0.6s ease";
   } else {
     card.style.animation = "fadeIn 0.6s ease";
   }
 
-  if (music.paused) {
-    music.volume = 0.4;
-    music.play();
-  }
+  animateCard();
 
-  if (step === 0) {
-    title.innerText = "So… ";
+  if (step === 1) {
+    title.innerText = "Quick question 💗";
     text.innerText = "Do you like surprises?";
-    btn.innerText = "Yes 😊";
-  }
-
-  else if (step === 1) {
+    btn.innerText = "Let's see 😊";
+    img.src = "https://media.giphy.com/media/3oriO0OEd9QIDdllqo/giphy.gif";
+    btn.disabled = true;
+    initGame();
+  } else if (step === 2) {
+    game.classList.remove("active");
     title.innerText = "Be honest 😌";
     text.innerText = "Do you smile when you see my messages?";
     btn.innerText = "Yes 💕";
     img.src = "https://i.ibb.co/wZGnd7mN/image.png";
+    btn.disabled = false;
   }
 
-  // 📜 STORY PAGE (LOREM IPSUM)
-  else if (step === 2) {
-    title.innerText = "Just a little story… 💌";
+  // 📜 STORY PAGE
+  else if (step === 3) {
+    game.classList.remove("active");
+    title.innerText = "A little story… 💌";
     text.innerText =
-      "Lorem ipsum dolor sit amet, consectetur adipiscing elit. " +
-      "Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. " +
-      "Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris.";
+      "I love the way you make ordinary moments feel special — " +
+      "like soft sunsets, warm hugs, and tiny laughs that stay with me.";
     btn.innerText = "Continue ➡️";
   }
 
-  else if (step === 3) {
+  else if (step === 4) {
+    game.classList.remove("active");
     title.innerText = "Important question 💖";
     text.innerText = "Will you be my Valentine?";
     btn.style.display = "none";
 
     img.src = "https://media.giphy.com/media/3oz8xKaR836UJOYeOc/giphy.gif";
 
-    card.innerHTML += `
+    actions.innerHTML = `
       <button class="yes" onclick="yes()">Yes 💘</button>
       <button class="no" id="noBtn" onclick="moveNo()">No 😜</button>
     `;
-
-}
+  }
 }
 
 function moveNo() {
   const noBtn = document.getElementById("noBtn");
 
   noBtn.style.left = Math.random() * 70 + "%";
-  noBtn.style.top = Math.random() * 70 + "%";
+  noBtn.style.top = Math.random() * 40 + "%";
+  sparkleBurst(noBtn.offsetLeft, noBtn.offsetTop);
 }
 
 function yes() {
-  const card = document.getElementById("card");
-  card.innerHTML = `
+  const cardContent = document.getElementById("cardContent");
+  const actions = document.getElementById("actions");
+  const musicToggle = document.getElementById("musicToggle");
+
+  if (musicToggle) {
+    musicToggle.style.display = "none";
+  }
+
+  cardContent.innerHTML = `
     <img src="https://media4.giphy.com/media/v1.Y2lkPTc5MGI3NjExc20xZjZqeWN6cmE5MGVqaTg5OWh4ZzV4OW5ibGc2cG51M2FrZ2txdyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/qFmdpUKAFZ6rMobzzu/giphy.gif" style="width:140px">
     <h2>Yayyy 💖🥹</h2>
     <p>
@@ -211,7 +459,40 @@ function yes() {
     </p>
     <p>Happy Valentine’s Day 🌹</p>
   `;
+  actions.innerHTML = "";
+  animateCard();
+  sparkleBurst(window.innerWidth / 2, window.innerHeight / 2);
 }
+
+function toggleMusic() {
+  const music = document.getElementById("music");
+  const toggle = document.getElementById("musicToggle");
+  if (music.paused) {
+    music.volume = 0.4;
+    music.play();
+    toggle.classList.add("active");
+    toggle.innerText = "♪ On";
+  } else {
+    music.pause();
+    toggle.classList.remove("active");
+    toggle.innerText = "♪ Music";
+  }
+}
+
+document.addEventListener("keydown", (event) => {
+  if (event.key === "Enter") {
+    const nextBtn = document.getElementById("nextBtn");
+    if (nextBtn && nextBtn.style.display !== "none") {
+      nextStep();
+    }
+  }
+});
+
+document.addEventListener("click", (event) => {
+  if (event.target.closest(".card")) {
+    sparkleBurst(event.clientX, event.clientY);
+  }
+});
 </script>
 
 </body>
