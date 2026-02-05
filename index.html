@@ -28,7 +28,7 @@
   .card {
     background: white;
     width: 92%;
-    max-width: 420px;
+    max-width: 700px;
     padding: 32px 30px 36px;
     border-radius: 26px;
     text-align: center;
@@ -253,13 +253,15 @@
     box-shadow: inset 0 0 0 2px rgba(255, 77, 109, 0.05);
   }
 
-  .photoPlaceholder {
+  .photoPlaceholderImg {
     border: 2px dashed rgba(255, 77, 109, 0.35);
     border-radius: 18px;
     padding: 26px;
     margin-top: 8px;
     color: #aa5f7b;
     font-size: 14px;
+    width: 260px;
+    height: auto;
   }
 
   .photoFrame {
@@ -342,6 +344,14 @@
     from { transform: scale(0.4); opacity: 1; }
     to { transform: scale(1.8); opacity: 0; }
   }
+
+  .photoRow {
+    display: flex;
+    gap: 12px;          /* space between photos */
+    justify-content: center;
+  }
+
+
 </style>
 </head>
 
@@ -626,10 +636,13 @@ function openGift(index) {
     `,
     2: ` 
       <h2>Photo of the one I love 📸</h2> 
-      <img src="photo.jpg" class="photoPlaceholderImg" >
-      <div class="envelope"
-        Photo of the most beautiful girl in the world 💕
+
+      <div class="photoRow">
+      <img src="photo.jpg" class="photoPlaceholderImg">
+      <img src="photo2.jpg" class="photoPlaceholderImg">
       </div>
+
+      <div class="envelope"> Photo of the most beautiful girl in the world 💕 </div>
       <button class="backBtn" onclick="renderGiftSelection()">Back to gifts</button>
     `,
     3: `
